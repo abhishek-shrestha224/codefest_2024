@@ -1,7 +1,7 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select, desc
 from datetime import datetime
-from src.db.models import Trip, TripBase, User, Location, BBox
+from src.db.models import Trip, TripBase, Location, BBox
 from typing import List
 
 
