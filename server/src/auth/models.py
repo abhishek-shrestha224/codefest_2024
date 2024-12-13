@@ -24,6 +24,6 @@ class UserBase(UserLogin):
 class User(UserBase, table=True):
     id: int = Field(primary_key=True, default=None)
     geofence_id: Optional[int] = Field(foreign_key="geofence.id", default=None)
-    geofence: Optional["Geofence"] = Relationship(back_populates="users")
+    geofence: "Geofence" = Relationship(back_populates="users")
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
