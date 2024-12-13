@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'Admin/admin_naviagtion.dart';
+import 'Admin/location.dart';
 
 void main() {
   runApp(const MyApp());

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'admin_home.dart';
 import 'admin_route.dart';
 import 'admin_profile.dart';
+import 'location.dart';
 
 void main() {
   runApp(const MyApp());
@@ -40,7 +41,7 @@ class _MyHomePageState extends State<admin_navigation> {
 
   final List<Widget> _screens = [
     const admin_home(),
-    const admin_route(),
+    MapPage(),
     const admin_profile(),
 
   ];
