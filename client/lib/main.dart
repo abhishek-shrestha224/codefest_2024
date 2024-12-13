@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'Admin/admin_naviagtion.dart';
+import 'Admin/location.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -31,7 +34,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const admin_navigation(),
     );
   }
 }

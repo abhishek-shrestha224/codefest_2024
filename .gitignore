@@ -49,3 +49,63 @@ client/app.*.map.json
 client/android/app/debug
 client/android/app/profile
 client/android/app/release
+
+# Flutter specific
+client/.dart_tool/
+client/.idea/
+client/.vscode/
+client/.flutter-plugins
+client/.flutter-plugins-dependencies
+client/.package
+client/generated_plugin_registrant.dart
+
+# Build outputs
+client/build/
+client/.gradle/
+client/android/.gradle/
+client/ios/Pods/
+client/.android/
+client/.ios/
+
+# IntelliJ IDE-specific files
+client/.idea/
+client/.metadata
+client/*.iml
+client/*.ipr
+
+# Flutter pub dependencies
+client/pubspec.lock
+
+# macOS
+client/macos/Flutter/ephemeral/
+
+# Web build artifacts
+client/web/manifest.json
+client/web/assets/
+client/web/index.html
+client/web/main.dart.js
+client/web/flutter.js
+client/web/flutter_service_worker.js
+
+# Windows build artifacts
+client/windows/flutter/ephemeral/
+
+# Linux build artifacts
+client/linux/flutter/ephemeral/
+
+# FileSystem specific
+.DS_Store
+Thumbs.db
+
+# Log and debug files
+*.log
+*.tmp
+*.swp
+
+# Private keys and sensitive files
+client/.env
+client/secrets.yaml
+client/firebase_private_keys.json
+
+# Coverage
+client/coverage/
