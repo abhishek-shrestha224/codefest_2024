@@ -6,45 +6,47 @@ from src.db.models import Location, LocationBase
 
 class BBoxService:
     async def show(self, session: AsyncSession):
-        statement = select(BBox).order_by(desc(BBox.id))
+        statement = select(Location).order_by(desc(Location.id))
         resource = await session.exec(statement)
         return resource.all()
 
-    async def retrieve(self, bbox_id: int, session: AsyncSession):
-        statement = select(BBox).where(BBox.id == bbox_id)
+    async def retrieve(self, location_id: int, session: AsyncSession):
+        statement = select(Location).where(Location.id == location_id)
         resource = await session.exec(statement)
-        bbox = resource.first()
-        return bbox if bbox else None
+        location = resource.first()
+        return location if location else None
 
-    async def create(self, bbox_data: BBoxBase, session: AsyncSession):
-        bbox = BBox(
-            area_name=bbox_data.area_name,
-            lat1=bbox_data.lat1,
-            lon1=bbox_data.lon1,
-            lat2=bbox_data.lat2,
-            lon2=bbox_data.lon2,
-            trip_id=bbox_data.trip_id,
+    async def create(self, location_data: LocationBase, session: AsyncSession):
+        location = Location(
+            lat=location_data.lat,
+            lon=location_data.lon,
+            radius_km=location_data.radius_km,
+            name=location_data.name,
+            trip_id=location_data.trip_id,
+            bbox_id=location_data.bbox_id,
         )
-        session.add(bbox)
+        session.add(location)
         await session.commit()
-        session.refresh(bbox)
-        return bbox
+        session.refresh(location)
+        return location
 
-    async def update(self, bbox_id: str, bbox_data: BBoxBase, session: AsyncSession):
-        bbox_to_update = await self.retrieve(bbox_id, session)
-        if bbox_to_update is None:
+    async def update(
+        self, location_id: int, location_data: LocationBase, session: AsyncSession
+    ):
+        location_to_update = await self.retrieve(location_id, session)
+        if location_to_update is None:
             return None
-        update_data = bbox_data.model_dump()
+        update_data = location_data.model_dump()
         for k, v in update_data.items():
-            setattr(bbox_to_update, k, v)
-        bbox_to_update.updated_at = datetime.now()
+            setattr(location_to_update, k, v)
+        location_to_update.updated_at = datetime.now()
         await session.commit()
-        return bbox_to_update
+        return location_to_update
 
-    async def delete(self, bbox_id: str, session: AsyncSession):
-        bbox_to_delete = await self.retrieve(bbox_id, session)
-        if bbox_to_delete is None:
+    async def delete(self, location_id: int, session: AsyncSession):
+        location_to_delete = await self.retrieve(location_id, session)
+        if location_to_delete is None:
             return None
-        await session.delete(bbox_to_delete)
+        await session.delete(location_to_delete)
         await session.commit()
-        return bbox_to_delete
+        return location_to_delete

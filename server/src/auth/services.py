@@ -5,14 +5,14 @@ from datetime import datetime
 
 
 class UserService:
-    async def retrieve_by_email(self, email: str, session: AsyncSession):
+    async def retrieve(self, email: str, session: AsyncSession):
         statement = select(User).where(User.email == email)
         resource = await session.exec(statement)
         user = resource.first()
         return user
 
     async def user_exists(self, email: str, session: AsyncSession):
-        user = await self.retrieve_by_email(email, session)
+        user = await self.retrieve(email, session)
         return True if user else False
 
     async def create(self, user: UserBase, session: AsyncSession):
@@ -47,9 +47,7 @@ class UserService:
         await session.commit()
         return user_to_delete
 
-    async def retrieve_user_location(
-        self, user: User, session: AsyncSession
-    ) -> Location:
+    async def get_location(self, user: User, session: AsyncSession) -> Location:
         statement = select(Location).where(Location.id == user.location_id)
         resource = await session.exec(statement)
         location = resource.first()
