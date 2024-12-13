@@ -1,7 +1,6 @@
-from src.db.models import User, UserBase
+from src.db.models import User, UserBase, Location
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select
-from sqlmodel.sql.expression import joinedload
 from datetime import datetime
 
 
@@ -48,10 +47,10 @@ class UserService:
         await session.commit()
         return user_to_delete
 
-    async def retrieve_with_relations(self, user_id: str, session: AsyncSession):
-        statement = (
-            select(User).options(joinedload(User.location)).where(User.id == user_id)
-        )
+    async def retrieve_user_location(
+        self, user: User, session: AsyncSession
+    ) -> Location:
+        statement = select(Location).where(Location.id == user.location_id)
         resource = await session.exec(statement)
-        user = resource.first()
-        return user
+        location = resource.first()
+        return location if location else None

@@ -1,7 +1,7 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select, desc
 from datetime import datetime
-from src.db.models import BBox, BBoxBase
+from src.db.models import BBox, BBoxBase, Trip
 
 
 class BBoxService:
@@ -30,7 +30,7 @@ class BBoxService:
         session.refresh(bbox)
         return bbox
 
-    async def update(self, bbox_id: str, bbox_data: BBoxBase, session: AsyncSession):
+    async def update(self, bbox_id: int, bbox_data: BBoxBase, session: AsyncSession):
         bbox_to_update = await self.retrieve(bbox_id, session)
         if bbox_to_update is None:
             return None
@@ -41,10 +41,17 @@ class BBoxService:
         await session.commit()
         return bbox_to_update
 
-    async def delete(self, bbox_id: str, session: AsyncSession):
+    async def delete(self, bbox_id: int, session: AsyncSession):
         bbox_to_delete = await self.retrieve(bbox_id, session)
         if bbox_to_delete is None:
             return None
         await session.delete(bbox_to_delete)
         await session.commit()
         return bbox_to_delete
+
+    async def get_trip(self, bbox_id: int, session: AsyncSession):
+        bbox = await self.retrieve(bbox_id, session)
+        statement = select(Trip).where(Trip.id == bbox.trip_id)
+        resource = await session.exec(statement)
+        trip = resource.first()
+        return trip if trip else None

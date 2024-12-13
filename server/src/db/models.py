@@ -3,26 +3,8 @@ from datetime import datetime
 from typing import List
 
 
-class LocationBase(SQLModel):
-    lat: float
-    lon: float
-    radius_km: float
-    name: str
-    trip_id: int = Field(foreign_key="trip.id", default=None)
-    bbox_id: int = Field(foreign_key="bbox.id", default=None)
-
-
-class Location(LocationBase, table=True):
-    id: int = Field(primary_key=True, default=None)
-    trip: "Trip" = Relationship(back_populates="locations")
-    BBox: "BBox" = Relationship(back_populates="locations")
-    users: List["User"] = Relationship(
-        back_populates="location", sa_relationship_kwargs={"lazy": "selectin"}
-    )
-
-
 class UserBase(SQLModel):
-    email: str
+    email: str = Field(unique=True)
     first_name: str
     last_name: str
     address: str
@@ -51,6 +33,24 @@ class BBox(BBoxBase, table=True):
     trip: "Trip" = Relationship(back_populates="bboxes")
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
+
+
+class LocationBase(SQLModel):
+    lat: float
+    lon: float
+    radius_km: float
+    name: str
+    trip_id: int = Field(foreign_key="trip.id", default=None)
+    bbox_id: int = Field(foreign_key="bbox.id", default=None)
+
+
+class Location(LocationBase, table=True):
+    id: int = Field(primary_key=True, default=None)
+    trip: "Trip" = Relationship(back_populates="locations")
+    BBox: "BBox" = Relationship(back_populates="locations")
+    users: List["User"] = Relationship(
+        back_populates="location", sa_relationship_kwargs={"lazy": "selectin"}
+    )
 
 
 class TripBase(SQLModel):
