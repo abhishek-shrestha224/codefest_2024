@@ -1,6 +1,8 @@
 from fastapi import FastAPI
-from src.auth.routes import auth_router
-from src.bbox.routes import bbox_router
+from .auth.routes import auth_router
+from .bbox.routes import bbox_router
+from .locations.routes import location_router
+from .trips.routes import trip_router
 
 app = FastAPI()
 
@@ -11,4 +13,6 @@ async def read_root():
 
 
 app.include_router(auth_router, prefix="/auth")
-app.include_router(bbox_router, prefix="/bbox")
+app.include_router(bbox_router, prefix="/bboxes")
+app.include_router(location_router, prefix="/locations")
+app.include_router(trip_router, prefix="/trips")
