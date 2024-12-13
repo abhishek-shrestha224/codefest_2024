@@ -1,14 +1,16 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select, desc
 from datetime import datetime
-from src.db.models import Location, LocationBase
+from src.db.models import Location, LocationBase, User, Trip, BBox
+from typing import List
 
 
 class BBoxService:
     async def show(self, session: AsyncSession):
         statement = select(Location).order_by(desc(Location.id))
         resource = await session.exec(statement)
-        return resource.all()
+        locations = resource.all()
+        return locations if locations else []
 
     async def retrieve(self, location_id: int, session: AsyncSession):
         statement = select(Location).where(Location.id == location_id)
@@ -50,3 +52,25 @@ class BBoxService:
         await session.delete(location_to_delete)
         await session.commit()
         return location_to_delete
+
+    async def get_trip(self, location_id: int, session: AsyncSession):
+        location = await self.retrieve(location_id, session)
+        statement = select(Trip).where(Trip.id == location.trip_id)
+        resource = await session.exec(statement)
+        trip = resource.first()
+        return trip if trip else None
+
+    async def get_bbox(self, location_id: int, session: AsyncSession):
+        location = await self.retrieve(location_id, session)
+        statement = select(BBox).where(BBox.id == location.bbox_id)
+        resource = await session.exec(statement)
+        bbox = resource.first()
+        return bbox if bbox else None
+
+    async def get_all_users(
+        self, location_id: int, session: AsyncSession
+    ) -> List[User]:
+        statement = select(User).where(User.location_id == location_id)
+        resource = await session.exec(statement)
+        users = resource.all()
+        return users if users else []
