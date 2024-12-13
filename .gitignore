@@ -1,7 +1,8 @@
 # Server side ignores
 server/.venv/
 server/.env
-
+server/**/__pycache__/
+server/migrations
 
 # Server side ignores
 # Miscellaneous
