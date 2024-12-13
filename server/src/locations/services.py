@@ -1,7 +1,7 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select, desc
 from datetime import datetime
-from src.db.models import LocationBase, User, Location, BBox, Trip
+from src.db.models import LocationBase, User, Location, Trip
 from typing import List
 
 
@@ -59,13 +59,6 @@ class LocationService:
         resource = await session.exec(statement)
         trip = resource.first()
         return trip if trip else None
-
-    async def get_bbox(self, location_id: int, session: AsyncSession):
-        location = await self.retrieve(location_id, session)
-        statement = select(BBox).where(BBox.id == location.bbox_id)
-        resource = await session.exec(statement)
-        bbox = resource.first()
-        return bbox if bbox else None
 
     async def get_all_users(
         self, location_id: int, session: AsyncSession

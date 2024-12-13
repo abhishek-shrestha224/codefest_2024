@@ -1,4 +1,4 @@
-from server.src.db.models import LocationBase
+from src.db.models import LocationBase
 from .services import LocationService
 from fastapi import APIRouter, HTTPException, Depends
 from sqlmodel.ext.asyncio.session import AsyncSession

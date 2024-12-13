@@ -1,7 +1,7 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select, desc
 from datetime import datetime
-from src.db.models import Trip, TripBase, Location, BBox
+from src.db.models import Trip, TripBase, Location
 from typing import List
 
 
@@ -43,12 +43,6 @@ class TripService:
         await session.delete(trip_to_delete)
         await session.commit()
         return trip_to_delete
-
-    async def get_all_bbox(self, trip_id: int, session: AsyncSession) -> List[BBox]:
-        statement = select(BBox).where(BBox.trip_id == trip_id)
-        resource = await session.exec(statement)
-        bbox = resource.all()
-        return bbox if bbox else []
 
     async def get_all_locations(
         self, trip_id: int, session: AsyncSession

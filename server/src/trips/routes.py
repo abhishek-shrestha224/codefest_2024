@@ -1,4 +1,4 @@
-from server.src.db.models import TripBase
+from src.db.models import TripBase
 from .services import TripService
 from fastapi import APIRouter, HTTPException, Depends
 from sqlmodel.ext.asyncio.session import AsyncSession
