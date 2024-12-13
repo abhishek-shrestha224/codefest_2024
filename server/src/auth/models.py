@@ -1,6 +1,5 @@
 from sqlmodel import Relationship, SQLModel, Field
 from datetime import datetime
-from typing import Optional
 from typing import TYPE_CHECKING
 
 
@@ -23,7 +22,7 @@ class UserBase(UserLogin):
 
 class User(UserBase, table=True):
     id: int = Field(primary_key=True, default=None)
-    geofence_id: Optional[int] = Field(foreign_key="geofence.id", default=None)
+    geofence_id: int = Field(foreign_key="geofence.id", default=None)
     geofence: "Geofence" = Relationship(back_populates="users")
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
