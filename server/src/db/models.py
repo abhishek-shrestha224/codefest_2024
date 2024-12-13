@@ -62,5 +62,8 @@ class Trip(TripBase, table=True):
     bboxes: List["BBox"] = Relationship(
         back_populates="trip", sa_relationship_kwargs={"lazy": "selectin"}
     )
+    locations: List["Location"] = Relationship(
+        back_populates="trip", sa_relationship_kwargs={"lazy": "selectin"}
+    )
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)

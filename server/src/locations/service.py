@@ -1,11 +1,11 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select, desc
 from datetime import datetime
-from src.db.models import Location, LocationBase, User, Trip, BBox
+from src.db.models import LocationBase, User, Location, BBox, Trip
 from typing import List
 
 
-class BBoxService:
+class LocationService:
     async def show(self, session: AsyncSession):
         statement = select(Location).order_by(desc(Location.id))
         resource = await session.exec(statement)
