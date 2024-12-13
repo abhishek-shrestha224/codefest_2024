@@ -1,2 +1,2 @@
-my_env/
-.env
+server/my_env/
+server/.env
