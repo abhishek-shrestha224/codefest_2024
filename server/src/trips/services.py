@@ -1,7 +1,8 @@
+from fastapi import HTTPException
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select, desc
 from datetime import datetime
-from src.db.models import Trip, TripBase, Location
+from src.db.models import Trip, TripBase, Location, TripLoc
 from typing import List
 
 
@@ -47,7 +48,53 @@ class TripService:
     async def get_all_locations(
         self, trip_id: int, session: AsyncSession
     ) -> List[Location]:
-        statement = select(Location).where(Location.trip_id == trip_id)
-        resource = await session.exec(statement)
-        locations = resource.all()
-        return locations if locations else []
+        statement = (
+            select(TripLoc.location_id)
+            .where(TripLoc.trip_id == trip_id)
+            .order_by(TripLoc.order)
+        )
+
+        result = await session.exec(statement)
+        trip_locations = result.all()
+        return trip_locations
+
+    async def assign_locations_to_trip(
+        self, trip_id: int, location_ids: List[int], session: AsyncSession
+    ):
+        statement = select(Trip).where(Trip.id == trip_id)
+        result = await session.exec(statement)
+        trip = result.first()
+
+        if not trip:
+            raise HTTPException(status_code=404, detail="Trip not found")
+
+        for index, location_id in enumerate(location_ids):
+            # Check if the location exists
+            statement = select(Location).where(Location.id == location_id)
+            result = await session.exec(statement)
+            location = result.first()
+
+            if not location:
+                raise HTTPException(
+                    status_code=404, detail=f"Location with ID {location_id} not found"
+                )
+
+            statement = (
+                select(TripLoc)
+                .where(TripLoc.trip_id == trip_id)
+                .where(TripLoc.location_id == location_id)
+            )
+            result = await session.exec(statement)
+            trip_location = result.first()
+
+            if trip_location:
+                trip_location.order = index
+                session.add(trip_location)
+            else:
+                new_trip_location = TripLoc(
+                    trip_id=trip_id, location_id=location_id, order=index
+                )
+                session.add(new_trip_location)
+
+        await session.commit()
+        return {"message": "Locations assigned to the trip successfully"}

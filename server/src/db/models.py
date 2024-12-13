@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import List
 
 
+# Base model for the user
 class UserBase(SQLModel):
     email: str = Field(unique=True)
     first_name: str
@@ -12,6 +13,7 @@ class UserBase(SQLModel):
     role: str = Field(default="user")
 
 
+# User model with a primary key and relationships
 class User(UserBase, table=True):
     id: int = Field(primary_key=True, default=None)
     location: "Location" = Relationship(back_populates="users")
@@ -19,30 +21,47 @@ class User(UserBase, table=True):
     updated_at: datetime = Field(default_factory=datetime.now)
 
 
+# Base model for location
 class LocationBase(SQLModel):
     lat: float
     lon: float
     radius_km: float
     name: str
-    trip_id: int = Field(foreign_key="trip.id", default=None)
 
 
+# Location model with a primary key and relationships
 class Location(LocationBase, table=True):
     id: int = Field(primary_key=True, default=None)
-    trip: "Trip" = Relationship(back_populates="locations")
     users: List["User"] = Relationship(
+        back_populates="location", sa_relationship_kwargs={"lazy": "selectin"}
+    )
+    trips: List["TripLoc"] = Relationship(
         back_populates="location", sa_relationship_kwargs={"lazy": "selectin"}
     )
 
 
+# Base model for trip
 class TripBase(SQLModel):
     name: str
 
 
+# Trip model with a primary key and relationships
 class Trip(TripBase, table=True):
     id: int = Field(primary_key=True, default=None)
-    locations: List["Location"] = Relationship(
-        back_populates="trip", sa_relationship_kwargs={"lazy": "selectin"}
-    )
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
+    trip_locations: List["TripLoc"] = Relationship(
+        back_populates="trip", sa_relationship_kwargs={"lazy": "selectin"}
+    )
+
+
+# TripCreate is now a Pydantic model for input validation (not a SQLModel)
+
+
+class TripLoc(SQLModel, table=True):
+    id: int = Field(primary_key=True, default=None)
+    trip_id: int = Field(foreign_key="trip.id")
+    location_id: int = Field(foreign_key="location.id")
+    order: int
+    trip: "Trip" = Relationship(back_populates="trip_locations")
+    location: "Location" = Relationship(back_populates="trips")
