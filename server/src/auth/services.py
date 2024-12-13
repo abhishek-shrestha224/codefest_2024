@@ -1,4 +1,4 @@
-from .models import User, UserBase
+from src.db.models import User, UserBase
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select
 from .utils import generate_hash

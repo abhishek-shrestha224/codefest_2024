@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
 
 # from fastapi.security import HTTPAuthorizationCredenials
-from .models import User, UserBase, UserLogin
+from src.db.models import User, UserBase, UserLogin
 from .services import UserService
 from src.db.main import get_session
 from sqlmodel.ext.asyncio.session import AsyncSession

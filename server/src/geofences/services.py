@@ -1,8 +1,7 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select, desc
 from datetime import datetime
-from .models import Geofence, GeofenceBase
-from src.auth.models import User
+from src.db.models import Geofence, GeofenceBase
 
 
 class GeofenceService:
@@ -17,22 +16,17 @@ class GeofenceService:
         geofence = resource.first()
         return geofence if geofence else None
 
-    async def create(
-        self, geofence_data: GeofenceBase, user: User, session: AsyncSession
-    ):
-        geofence_data = Geofence(
-            title=geofence_data.title,
-            author=geofence_data.author,
-            publisher=geofence_data.publisher,
-            published_date=geofence_data.published_date,
-            page_count=geofence_data.page_count,
-            language=geofence_data.language,
-            user=user,
+    async def create(self, geofence_data: GeofenceBase, session: AsyncSession):
+        geofence = Geofence(
+            landmark=geofence_data.landmark,
+            lat=geofence_data.lat,
+            lon=geofence_data.lon,
+            radius=geofence_data.radius,
         )
-        session.add(geofence_data)
+        session.add(geofence)
         await session.commit()
-        session.refresh(geofence_data)
-        return geofence_data
+        session.refresh(geofence)
+        return geofence
 
     async def update(
         self, geofence_id: str, geofence_data: GeofenceBase, session: AsyncSession
