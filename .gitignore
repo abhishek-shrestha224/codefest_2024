@@ -1,5 +1,5 @@
 # Server side ignores
-server/my_env/
+server/.venv/
 server/.env
 
 
