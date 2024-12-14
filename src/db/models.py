@@ -3,9 +3,12 @@ from datetime import datetime
 from typing import List
 
 
-# Base model for the user
-class UserBase(SQLModel):
+class UserLogin(SQLModel):
     email: str = Field(unique=True)
+    password: str = Field(exclude=True)
+
+
+class UserBase(UserLogin):
     first_name: str
     last_name: str
     address: str
