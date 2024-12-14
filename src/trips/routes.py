@@ -104,13 +104,13 @@ async def get_locations(
     return updated_locations
 
 
-@trip_router.get("/{user_id}/track")
+@trip_router.get("/track")
 async def track(
-    user_id: int,
     session: AsyncSession = Depends(get_session),
-    _: HTTPAuthorizationCredentials = Depends(security),
+    cred: HTTPAuthorizationCredentials = Depends(security),
 ):
-    active_trip = await trip_service.is_trip_active(user_id, session)
+    email = cred["user"]["email"]
+    active_trip = await trip_service.is_trip_active(email, session)
 
     if not active_trip:
         return {"active": False, "message": "No active trip found"}

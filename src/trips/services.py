@@ -109,8 +109,8 @@ class TripService:
             return None
         return trip.active
 
-    async def is_trip_active(self, user_id: int, session: AsyncSession):
-        user = await user_service.retrieve_by_id(user_id, session)
+    async def is_trip_active(self, email: str, session: AsyncSession):
+        user = await user_service.retrieve(email, session)
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
 
