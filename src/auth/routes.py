@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPAuthorizationCredentials
-from src.auth.dependencies import RefreshTokenBearer, RoleCheker, get_curr_user
+from src.auth.dependencies import RefreshTokenBearer, get_curr_user
 from src.auth.utils import create_access_token, verify_password
 from src.db.blacklist import blacklist_token
 from src.db.models import User, UserBase, UserLogin
@@ -17,7 +17,6 @@ location_service = LocationService()
 auth_router = APIRouter()
 user_service = UserService()
 refresh = RefreshTokenBearer()
-role = Depends(RoleCheker(["admin"]))
 
 
 @auth_router.post("/signup", response_model=User, status_code=200)
@@ -65,7 +64,7 @@ async def login(credentials: UserLogin, session: AsyncSession = Depends(get_sess
             "msg": "Login Sucessful",
             "access_token": access_token,
             "refresh_token": refresh_token,
-            "user": {"id": str(user.id), "email": user.email},
+            "user": {"id": str(user.id), "email": user.email, "role": user.role},
         },
         status_code=200,
     )
@@ -85,7 +84,7 @@ async def refresh_token(
     return JSONResponse(content={"access_token": new_access_token})
 
 
-@auth_router.get("/me", dependencies=[role])
+@auth_router.get("/me")
 async def get_details(user=Depends(get_curr_user), session=Depends(get_session)):
     location = await user_service.get_location(user, session)
     return {"user": user, "location": location}
