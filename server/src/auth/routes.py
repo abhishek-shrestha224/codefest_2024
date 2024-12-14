@@ -21,3 +21,13 @@ async def create_user_account(
         )
     new_user = await user_service.create(user, session)
     return new_user
+
+
+@auth_router.post("/retrieve/{email}", response_model=User, status_code=200)
+async def retrieve(email: str, session: AsyncSession = Depends(get_session)):
+    user = await user_service.retrieve(email, session)
+    if not user:
+        raise HTTPException(
+            status_code=403, detail=f"User with email: {email} already exists"
+        )
+    return user

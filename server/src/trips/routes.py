@@ -6,7 +6,6 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from src.db.main import get_session
 from src.locations.services import LocationService
 from src.auth.services import UserService
-from .utils import is_trip_active
 
 trip_service = TripService()
 trip_router = APIRouter()
@@ -81,7 +80,7 @@ async def get_locations(
 
 @trip_router.get("/{user_id}/track")
 async def track(user_id: int, session: AsyncSession = Depends(get_session)):
-    active_trip = await is_trip_active(user_id, session)
+    active_trip = await trip_service.is_trip_active(user_id, session)
 
     if not active_trip:
         return {"active": False, "message": "No active trip found"}

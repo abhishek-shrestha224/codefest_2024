@@ -4,6 +4,11 @@ from sqlmodel import select, desc
 from datetime import datetime
 from src.db.models import Trip, TripBase, Location, TripLoc
 from typing import List
+from src.locations.services import LocationService
+from src.auth.services import UserService
+
+user_service = UserService()
+location_service = LocationService()
 
 
 class TripService:
@@ -103,3 +108,19 @@ class TripService:
         if trip is None:
             return None
         return trip.active
+
+    async def is_trip_active(self, user_id: int, session: AsyncSession):
+        user = await user_service.retrieve_by_id(user_id, session)
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        loc = await user_service.get_location(user, session)
+        if not loc:
+            raise HTTPException(status_code=404, detail="User location not found")
+
+        trips = await location_service.get_all_trip(loc.id, session)
+        for trip in trips:
+            if await self.trip_active(trip.id, session):
+                return trip
+
+        return None
