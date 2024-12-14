@@ -23,7 +23,7 @@ async def create_user_account(
     return new_user
 
 
-@auth_router.post("/retrieve/{email}", response_model=User, status_code=200)
+@auth_router.get("/retrieve/{email}", response_model=User, status_code=200)
 async def retrieve(email: str, session: AsyncSession = Depends(get_session)):
     user = await user_service.retrieve(email, session)
     if not user:
