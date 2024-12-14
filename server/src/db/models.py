@@ -43,9 +43,9 @@ class Location(LocationBase, table=True):
 # Base model for trip
 class TripBase(SQLModel):
     name: str
+    active: bool = Field(default=False)
 
 
-# Trip model with a primary key and relationships
 class Trip(TripBase, table=True):
     id: int = Field(primary_key=True, default=None)
     created_at: datetime = Field(default_factory=datetime.now)
@@ -53,9 +53,6 @@ class Trip(TripBase, table=True):
     trip_locations: List["TripLoc"] = Relationship(
         back_populates="trip", sa_relationship_kwargs={"lazy": "selectin"}
     )
-
-
-# TripCreate is now a Pydantic model for input validation (not a SQLModel)
 
 
 class TripLoc(SQLModel, table=True):

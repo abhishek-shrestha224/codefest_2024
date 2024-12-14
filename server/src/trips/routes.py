@@ -5,10 +5,13 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.db.main import get_session
 from src.locations.services import LocationService
+from src.auth.services import UserService
+from .utils import is_trip_active
 
 trip_service = TripService()
 trip_router = APIRouter()
 location_service = LocationService()
+user_service = UserService()
 
 
 @trip_router.post("/create")
@@ -32,10 +35,13 @@ async def retrieve(id: int, session: AsyncSession = Depends(get_session)):
 
 
 @trip_router.patch("/update/{id}")
-async def update(
-    id: int, new_trip: TripBase, session: AsyncSession = Depends(get_session)
-):
-    updated_trip = await trip_service.update(id, new_trip, session)
+async def update(id: int, session: AsyncSession = Depends(get_session)):
+    trip = await trip_service.retrieve(id, session)
+    if not trip:
+        raise HTTPException(status_code=404, detail="Not Found")
+    updated_trip = await trip_service.update(
+        id, TripBase(name=trip.name, active=not trip.active), session
+    )
     if not updated_trip:
         raise HTTPException(status_code=404, detail="Not Found")
     return updated_trip
@@ -71,3 +77,24 @@ async def get_locations(
         updated_locations.append(updated_location)
 
     return updated_locations
+
+
+@trip_router.get("/{user_id}/track")
+async def track(user_id: int, session: AsyncSession = Depends(get_session)):
+    active_trip = await is_trip_active(user_id, session)
+
+    if not active_trip:
+        return {"active": False, "message": "No active trip found"}
+
+    locations = await trip_service.get_all_locations(active_trip.id, session)
+    ordered_locations = []
+
+    for location_id in locations:
+        location = await location_service.retrieve(location_id, session)
+        if location:
+            ordered_locations.append(location)
+
+    return {
+        "active": True,
+        "trip_data": {"trip": active_trip, "locations": ordered_locations},
+    }

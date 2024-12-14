@@ -69,7 +69,6 @@ class TripService:
             raise HTTPException(status_code=404, detail="Trip not found")
 
         for index, location_id in enumerate(location_ids):
-            # Check if the location exists
             statement = select(Location).where(Location.id == location_id)
             result = await session.exec(statement)
             location = result.first()
@@ -98,3 +97,9 @@ class TripService:
 
         await session.commit()
         return {"message": "Locations assigned to the trip successfully"}
+
+    async def trip_active(self, trip_id: int, session: AsyncSession):
+        trip = await self.retrieve(trip_id, session)
+        if trip is None:
+            return None
+        return trip.active
